@@ -139,17 +139,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleApplication1.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Definitions.cpp" />
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="OptimizationMethods.cpp" />
     <ClCompile Include="R64M.cpp" />
+    <ClCompile Include="StopCriteria.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Definitions.h" />
     <ClInclude Include="Eigen\src\QR\ColPivHouseholderQR.h" />
     <ClInclude Include="Eigen\src\QR\ColPivHouseholderQR_LAPACKE.h" />
     <ClInclude Include="Eigen\src\QR\CompleteOrthogonalDecomposition.h" />
     <ClInclude Include="Eigen\src\QR\FullPivHouseholderQR.h" />
     <ClInclude Include="Eigen\src\QR\HouseholderQR.h" />
     <ClInclude Include="Eigen\src\QR\HouseholderQR_LAPACKE.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="OptimizationMethods.h" />
     <ClInclude Include="R64M.hpp" />
+    <ClInclude Include="StopCriteria.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Eigen\Cholesky" />

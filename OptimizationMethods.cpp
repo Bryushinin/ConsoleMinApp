@@ -1,21 +1,25 @@
 #include "OptimizationMethods.h"
 
 
-OptimizationMethod::OptimizationMethod(Function* F, vector<double> x_0_, vector<double> l_border, vector<double> r_border, int SC_var, double eps) :f(F), x_0(x_0_), D(l_border, r_border), answer(F->eval(x_0_))
+OptimizationMethod::OptimizationMethod(Function* F, vector<double> x_0_, vector<double> l_border, vector<double> r_border,
+	int SC_var, double eps, ostream* out_) :f(F), x_0(x_0_), D(l_border, r_border), answer(F->eval(x_0_))
 {
 	switch (SC_var)
 	{
 	case 1:
 		SC = new SC_GradientNorm;
 		SC->eps = eps;
+		SC->out = out_;
 		break;
 	case 2:
 		SC = new SC_PointsClose;
 		SC->eps = eps;
+		SC->out = out_;
 		break;
 	case 3:
 		SC = new SC_FuncRelative;
 		SC->eps = eps;
+		SC->out = out_;
 		break;
 	default:
 		break;
@@ -27,21 +31,34 @@ double Newton::get_alpha_alt(vector<double> x_n)
 {
 	vector<vector<double>> t = f->eval_Gesse(x_n);
 	vector<double> t1 = -(f->eval_gr(x_n));
-	Eigen::Matrix2d A;
-	Eigen::Vector2d b;
-	A << t[0][0], t[0][1], t[1][0], t[1][1];
-	b << t1[0], t1[1];
-	Eigen::Vector2d x = A.colPivHouseholderQr().solve(b);
-	//std::cout << endl<<"p_n " << x << endl;
-	p_n.clear(); p_n.push_back(x[0]); p_n.push_back(x[1]);
+	
+	Eigen::MatrixXd A;
+	vector<double> entries;
+	vector<double> entries1;
+	Eigen::Matrix<double, Eigen::Dynamic, 1> b;
+	for (size_t i = 0; i < x_n.size(); ++i)
+	{
+		for (size_t j = 0; j < x_n.size(); ++j)
+			//A << t[i][j];
+			entries.push_back(t[i][j]);
+		//b << t1[i];
+		entries1.push_back(t1[i]);
+	}
+	A = A.Map(&entries[0], int(x_n.size()), int(x_n.size()));
+	b = b.Map(&entries1[0], int(x_n.size()));
+	Eigen::VectorXd x = A.colPivHouseholderQr().solve(b);
+	p_n.clear();
+	for (size_t j = 0; j < x_n.size(); ++j)
+		p_n.push_back(x[j]);
+	
 	double alp = 0., step = 0.001, min_ = f->eval(x_n), alpha = 0.;
 	while (alp < 1.)
 	{
 		alp += step;
-		double t = f->eval(x_n + alp * p_n);
-		if (t < min_ && D.is_in(x_n + alp * p_n))
+		double temp = f->eval(x_n + alp * p_n);
+		if (temp < min_ && D.is_in(x_n + alp * p_n))
 		{
-			min_ = t;
+			min_ = temp;
 			alpha = alp;
 		}
 	}
@@ -67,13 +84,17 @@ vector<double> Newton::optimize()
 vector<double> Stochastic::iteration(vector<double> x, double& delta)
 {
 	vector<double> next; next.clear();
-	double p_ = rnunif();
+
+	std::uniform_real_distribution<> distr(0., 1.);
+	random_device rd;
+	std::mt19937 gen(rd());
+	double p_ = distr(gen);
 	if (p_ < p)
 	{
 		delta = 10 * SC->eps;
 		for (size_t i = 0; i < x.size(); ++i)
 		{
-			next.push_back(D.left_borders[i] + rnunif() * (D.right_borders[i] - D.left_borders[i]));
+			next.push_back(D.left_borders[i] + distr(gen) * (D.right_borders[i] - D.left_borders[i]));
 		}
 	}
 	else
@@ -84,8 +105,7 @@ vector<double> Stochastic::iteration(vector<double> x, double& delta)
 			double s = 0;
 			for (size_t i = 0; i < x.size(); ++i)
 			{
-				next.push_back(rnunif() * delta - delta / 2 + x[i]);
-				//std::cout << x[i] - delta / 2 << " " << next[i] << " " << x[i] + delta / 2 << endl;
+				next.push_back(distr(gen) * delta - delta / 2 + x[i]);
 				s += next[i] * next[i];
 			}
 			if (D.is_in(next))

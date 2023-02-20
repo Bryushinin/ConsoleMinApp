@@ -15,6 +15,7 @@ protected:
 	int bound;
 public:
 	double eps;
+	ostream* out;
 	/**
 	@brief Main function
 	@param a contains the trajectory of iterations
@@ -26,7 +27,7 @@ public:
 	@brief Constructor
 	@param bo is the upper bound of iterations number
 	*/
-	StopCriterion(double ep = 0.001, int bo = 1000) : eps(ep), bound(bo) {}
+	StopCriterion(double ep = 0.001, int bo = 1000, ostream* out_ = nullptr) : eps(ep), bound(bo), out(out_) {}
 };
 /**
 @brief Class that stops iterations if the norm of the gradient in the current point is less than eps

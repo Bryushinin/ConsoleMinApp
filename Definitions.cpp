@@ -62,15 +62,15 @@ double norm(vector<double> x)
 
 double f_0(vector<double>& x)
 {
-	return x[1];
+	return x[0];
 }
 
 
 
 bool Area::is_in(vector<double> x)
 {
-	if (dim != x.size())
-		return false;
+	//if (dim != x.size())
+	//	return false;
 	bool f = true;
 	for (int i = 0; i < dim; ++i)
 		if (x[i] < left_borders[i] || x[i] > right_borders[i])

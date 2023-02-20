@@ -20,7 +20,7 @@ public:
 	@param SC_var current variant of stop criterion (see StopCriteria.h for more)
 	*/
 	OptimizationMethod(Function* F, vector<double> x_0_, vector<double> l_border,
-		vector<double> r_border, int SC_var = 1, double eps = 0.001);
+		vector<double> r_border, int SC_var = 1, double eps = 0.001, ostream* out_ = &cout);
 	/**
 	@brief Main function
 	@return The point of last iteration
@@ -45,7 +45,9 @@ public:
 	@brief Constructor
 	@detailed See OptimizationMethod constructor for more
 	*/
-	Newton(Function* F, vector<double> x_0_, vector<double> l_border, vector<double> r_border, int SC_var = 1, double eps_ = 0.001) :p_n(), OptimizationMethod(F, x_0_, l_border, r_border, SC_var, eps_) {}
+	Newton(Function* F, vector<double> x_0_, vector<double> l_border, vector<double> r_border,
+		int SC_var = 1, double eps_ = 0.001, ostream* out_ = &cout) :p_n(),
+		OptimizationMethod(F, x_0_, l_border, r_border, SC_var, eps_, out_) {}
 	vector<double> iteration(vector<double>& x_, double alpha){return x_ + alpha * p_n;}
 	/**
 	@brief Main function
@@ -78,6 +80,6 @@ public:
 	@detailed See OptimizationMethod constructor for more
 	*/
 	Stochastic(Function* F, vector<double> x_0_, vector<double> l_border, vector<double> r_border,
-		int SC_var = 1, double eps_ = 0.001, double alpha_ = 0.2, double p_ = 0.5) :
-		alpha(alpha_), p(p_), OptimizationMethod(F, x_0_, l_border, r_border, SC_var, eps_) {}
+		int SC_var = 1, double eps_ = 0.001, ostream* out_ = &cout, double alpha_ = 0.2, double p_ = 0.5) :
+		alpha(alpha_), p(p_), OptimizationMethod(F, x_0_, l_border, r_border, SC_var, eps_, out_) {}
 };
